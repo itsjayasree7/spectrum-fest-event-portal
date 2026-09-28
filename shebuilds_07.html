@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spectrum Fest 2026 – College Event Portal</title>
+<style>
+  :root { --ink:#1b1f3b; --indigo:#2b2f77; --gold:#f2a900; --paper:#faf7f0; --line:#ddd8cb; --ok:#1b7f4b; --bad:#c62828; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+  body { font-family: Georgia, "Times New Roman", serif; background: var(--paper); color: var(--ink); line-height: 1.6; font-size: 1.05rem; }
+  h1, h2, h3, nav, button, label, input, select, textarea, .tag { font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif; }
+  img, svg { max-width: 100%; display: block; }
+  section { padding: 60px 5%; max-width: 1150px; margin: auto; }
+  h2 { font-size: 1.9rem; margin-bottom: 6px; }
+  .sub { color: #555; margin-bottom: 28px; max-width: 60ch; }
+
+  /* ---------- Header / nav ---------- */
+  header { position: sticky; top: 0; z-index: 10; background: var(--indigo); color: #fff; }
+  .bar { max-width: 1150px; margin: auto; display: flex; justify-content: space-between; align-items: center; padding: 12px 5%; }
+  .logo { font-weight: 700; font-size: 1.2rem; color: #fff; text-decoration: none; letter-spacing: .3px; }
+  .logo span { color: var(--gold); }
+  nav ul { list-style: none; display: flex; gap: 22px; }
+  nav a { color: #fff; text-decoration: none; padding: 6px 2px; border-bottom: 2px solid transparent; }
+  nav a:hover, nav a:focus { border-color: var(--gold); outline: none; }
+  #menuBtn { display: none; background: none; border: 2px solid #fff; color: #fff; font-size: 1.2rem; padding: 6px 12px; border-radius: 6px; cursor: pointer; min-height: 44px; }
+
+  /* ---------- Hero ---------- */
+  .hero { background: var(--indigo); color: #fff; padding: 0; max-width: none; }
+  .hero-inner { max-width: 1150px; margin: auto; padding: 70px 5% 60px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: center; }
+  .hero h1 { font-size: clamp(2.2rem, 6vw, 4rem); line-height: 1.05; }
+  .hero h1 em { font-style: normal; color: var(--gold); }
+  .hero p { margin: 16px 0 24px; max-width: 48ch; color: #e6e6f5; }
+  .btn { display: inline-block; background: var(--gold); color: var(--ink); border: 0; padding: 12px 22px; border-radius: 6px; font-weight: 700; font-size: 1rem; cursor: pointer; text-decoration: none; min-height: 44px; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.alt { background: transparent; color: #fff; border: 2px solid #fff; margin-left: 8px; }
+  .ann { background: #fff; color: var(--ink); border-radius: 10px; padding: 20px; }
+  .ann h3 { margin-bottom: 10px; }
+  .ann ul { list-style: none; max-height: 190px; overflow-y: auto; }
+  .ann li { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: .95rem; }
+  .ann li:last-child { border: 0; }
+  .ann form { display: flex; gap: 6px; margin-top: 12px; }
+  .ann input { flex: 1; min-width: 0; padding: 8px; border: 1px solid var(--line); border-radius: 6px; }
+  .ann button { padding: 8px 14px; border: 0; background: var(--indigo); color: #fff; border-radius: 6px; cursor: pointer; }
+  .highlights { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 30px; }
+  .highlights div { border-left: 4px solid var(--gold); padding: 4px 14px; }
+  .highlights b { font-family: "Trebuchet MS", Arial, sans-serif; display: block; }
+
+  /* ---------- Events ---------- */
+  .filters { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+  select, input, textarea { padding: 10px; border: 1px solid #b9b3a3; border-radius: 6px; font-size: 1rem; background: #fff; width: 100%; }
+  .filters select, .filters input { width: auto; min-width: 170px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+  .card .top { height: 8px; }
+  .card .body { padding: 18px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .tag { align-self: flex-start; font-size: .8rem; padding: 2px 10px; border-radius: 20px; background: #eceaf8; color: var(--indigo); }
+  .meta { font-size: .92rem; color: #555; }
+  .card .btn { margin-top: auto; align-self: flex-start; background: var(--indigo); color: #fff; }
+  #noEvents { display: none; padding: 20px; background: #fff3d6; border-radius: 8px; }
+
+  /* ---------- Schedule ---------- */
+  .day { margin-bottom: 26px; }
+  .day h3 { border-bottom: 2px solid var(--gold); display: inline-block; margin-bottom: 10px; }
+  .slot { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .slot time { font-family: "Trebuchet MS", Arial, sans-serif; font-weight: 700; color: var(--indigo); }
+
+  /* ---------- Gallery ---------- */
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .gallery figure { aspect-ratio: 4/3; border-radius: 10px; display: flex; align-items: flex-end; padding: 12px; color: #fff; font-family: "Trebuchet MS", Arial, sans-serif; position: relative; overflow: hidden; }
+  .gallery figure:nth-child(3n+1) { aspect-ratio: 1/1; }
+  .gallery figure::before { content: attr(data-icon); position: absolute; top: 10px; right: 14px; font-size: 2.4rem; opacity: .9; }
+
+  /* ---------- Forms ---------- */
+  .formbox { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 24px; max-width: 640px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-weight: 700; margin-bottom: 4px; font-size: .95rem; }
+  .err { color: var(--bad); font-size: .85rem; min-height: 1.1em; font-family: Arial, sans-serif; }
+  .invalid { border-color: var(--bad); }
+  .msg { display: none; padding: 14px; border-radius: 8px; margin-top: 16px; background: #e3f5ea; color: var(--ok); font-weight: 700; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .contact { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
+  .contact ul { list-style: none; }
+  .contact li { padding: 8px 0; }
+  footer { background: var(--ink); color: #cfd0e6; text-align: center; padding: 28px 5%; font-size: .92rem; }
+
+  :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+  /* ---------- Responsive (media queries) ---------- */
+  @media (max-width: 900px) {                       /* tablet */
+    .hero-inner, .contact { grid-template-columns: 1fr; }
+    section { padding: 44px 5%; }
+  }
+  @media (max-width: 640px) {                       /* mobile */
+    #menuBtn { display: block; }
+    nav { width: 100%; }
+    .bar { flex-wrap: wrap; }
+    nav ul { display: none; flex-direction: column; gap: 0; padding: 8px 0; }
+    nav ul.open { display: flex; }
+    nav a { display: block; padding: 12px 0; }
+    .two { grid-template-columns: 1fr; }
+    .slot { grid-template-columns: 1fr; gap: 0; }
+    .btn.alt { margin: 10px 0 0; }
+    .filters select, .filters input { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <a href="#home" class="logo">Spectrum<span>Fest</span> 2026</a>
+    <button id="menuBtn" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+    <nav aria-label="Main">
+      <ul id="menu">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#schedule">Schedule</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#register">Registration</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section class="hero" id="home">
+    <div class="hero-inner">
+      <div>
+        <h1>Three days. <em>Twelve events.</em> One campus.</h1>
+        <p>Welcome to Spectrum Fest, our annual inter-department college festival. Compete, perform, build and celebrate from 12 to 14 November 2026.</p>
+        <a class="btn" href="#register">Register now</a>
+        <a class="btn alt" href="#events">Browse events</a>
+      </div>
+      <aside class="ann" aria-live="polite">
+        <h3>Latest announcements</h3>
+        <ul id="annList"></ul>
+        <form id="annForm">
+          <input type="text" id="annInput" placeholder="Add an announcement" aria-label="New announcement">
+          <button type="submit">Post</button>
+        </form>
+      </aside>
+    </div>
+  </section>
+
+  <section id="highlights" style="padding-bottom:0">
+    <h2>Festival highlights</h2>
+    <div class="highlights">
+      <div><b>Hack Sprint</b>Six-hour team coding challenge</div>
+      <div><b>Battle of Bands</b>Live music on the main stage</div>
+      <div><b>Robo Race</b>Build and race line-following bots</div>
+      <div><b>Cultural Night</b>Dance, drama and food stalls</div>
+    </div>
+  </section>
+
+  <!-- EVENTS -->
+  <section id="events">
+    <h2>Events</h2>
+    <p class="sub">Filter by category or date, then select Register to jump to the form with the event already chosen.</p>
+    <div class="filters">
+      <select id="fCat" aria-label="Filter by category"></select>
+      <input type="date" id="fDate" aria-label="Filter by date" min="2026-11-12" max="2026-11-14">
+      <button class="btn" id="fReset" type="button">Show all</button>
+    </div>
+    <div class="cards" id="cards"></div>
+    <p id="noEvents">No events match these filters. Try another category or date.</p>
+  </section>
+
+  <!-- SCHEDULE -->
+  <section id="schedule">
+    <h2>Schedule</h2>
+    <p class="sub">Day-wise and time-wise list of every event and its venue.</p>
+    <div id="scheduleBox"></div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery">
+    <h2>Gallery</h2>
+    <p class="sub">Moments from last year's festival.</p>
+    <div class="gallery" id="galleryBox"></div>
+  </section>
+
+  <!-- REGISTRATION -->
+  <section id="register">
+    <h2>Event registration</h2>
+    <p class="sub">All fields are required.</p>
+    <div class="formbox">
+      <form id="regForm" novalidate>
+        <div class="field"><label for="rName">Full name</label>
+          <input id="rName" type="text" autocomplete="name"><div class="err" id="eName"></div></div>
+        <div class="two">
+          <div class="field"><label for="rEmail">Email</label>
+            <input id="rEmail" type="email" autocomplete="email"><div class="err" id="eEmail"></div></div>
+          <div class="field"><label for="rMobile">Mobile number</label>
+            <input id="rMobile" type="tel" inputmode="numeric" autocomplete="tel"><div class="err" id="eMobile"></div></div>
+        </div>
+        <div class="two">
+          <div class="field"><label for="rDept">Department</label>
+            <select id="rDept">
+              <option value="">Select department</option><option>CSE</option><option>CSE (AI &amp; ML)</option>
+              <option>IT</option><option>ECE</option><option>EEE</option><option>Mechanical</option><option>Civil</option>
+            </select><div class="err" id="eDept"></div></div>
+          <div class="field"><label for="rYear">Year</label>
+            <select id="rYear">
+              <option value="">Select year</option><option>I</option><option>II</option><option>III</option><option>IV</option>
+            </select><div class="err" id="eYear"></div></div>
+        </div>
+        <div class="field"><label for="rEvent">Event</label>
+          <select id="rEvent"></select><div class="err" id="eEvent"></div></div>
+        <button class="btn" type="submit">Submit registration</button>
+        <div class="msg" id="regMsg" role="status"></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <h2>Contact</h2>
+    <p class="sub">Questions about events, venues or registration? Reach the organising committee.</p>
+    <div class="contact">
+      <ul>
+        <li><b>Email:</b> fest@college.example</li>
+        <li><b>Phone:</b> +91 98765 43210</li>
+        <li><b>Helpdesk:</b> Admin Block, Ground Floor, 9 am – 5 pm</li>
+        <li><b>Student coordinator:</b> Student Council Office</li>
+      </ul>
+      <div class="formbox">
+        <form id="enqForm" novalidate>
+          <div class="field"><label for="qName">Your name</label><input id="qName" type="text"><div class="err" id="eqName"></div></div>
+          <div class="field"><label for="qEmail">Email</label><input id="qEmail" type="email"><div class="err" id="eqEmail"></div></div>
+          <div class="field"><label for="qMsg">Message</label><textarea id="qMsg" rows="4"></textarea><div class="err" id="eqMsg"></div></div>
+          <button class="btn" type="submit">Send enquiry</button>
+          <div class="msg" id="enqMsg" role="status"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Spectrum Fest 2026 &middot; Organised by the Student Council, Department of Student Affairs</p>
+  <p>&copy; 2026 College Name. All rights reserved.</p>
+</footer>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  /* ---------- Data ---------- */
+  const events = [
+    { id:1,  name:"Hack Sprint",        cat:"Technical", date:"2026-11-12", time:"09:30", venue:"Computer Lab 2",  desc:"Six-hour team coding challenge." },
+    { id:2,  name:"AI Vision Quiz",     cat:"Technical", date:"2026-11-12", time:"11:00", venue:"Seminar Hall A",  desc:"Quiz on ML, CV and NLP basics." },
+    { id:3,  name:"Robo Race",          cat:"Technical", date:"2026-11-13", time:"10:00", venue:"Open Arena",      desc:"Line-following robot race." },
+    { id:4,  name:"Paper Presentation", cat:"Technical", date:"2026-11-13", time:"14:00", venue:"Seminar Hall B",  desc:"Present a research idea in 8 minutes." },
+    { id:5,  name:"Battle of Bands",    cat:"Cultural",  date:"2026-11-12", time:"17:00", venue:"Main Stage",      desc:"Live band competition." },
+    { id:6,  name:"Group Dance",        cat:"Cultural",  date:"2026-11-13", time:"16:30", venue:"Main Stage",      desc:"Teams of 6 to 12 members." },
+    { id:7,  name:"Short Film Screening",cat:"Cultural", date:"2026-11-14", time:"10:30", venue:"Auditorium",      desc:"Student films up to 10 minutes." },
+    { id:8,  name:"Cultural Night",     cat:"Cultural",  date:"2026-11-14", time:"18:00", venue:"Main Stage",      desc:"Closing night with music and dance." },
+    { id:9,  name:"Inter-Dept Football",cat:"Sports",    date:"2026-11-13", time:"08:00", venue:"Ground A",        desc:"Knockout football, 7 a side." },
+    { id:10, name:"Chess Blitz",        cat:"Sports",    date:"2026-11-14", time:"09:00", venue:"Indoor Hall",     desc:"5-minute blitz, Swiss format." },
+    { id:11, name:"Treasure Hunt",      cat:"Fun",       date:"2026-11-14", time:"11:30", venue:"Whole Campus",    desc:"Clue-based campus hunt in teams of 4." },
+    { id:12, name:"Photography Walk",   cat:"Fun",       date:"2026-11-12", time:"15:00", venue:"Garden Area",     desc:"Theme-based photo walk." }
+  ];
+  const colours = { Technical:"#2b2f77", Cultural:"#b23a6e", Sports:"#1b7f4b", Fun:"#e07a1f" };
+  const gallery = [
+    ["Opening ceremony","🎉","#2b2f77"], ["Hack Sprint finals","💻","#1e5aa8"], ["Battle of Bands","🎸","#b23a6e"],
+    ["Robo Race","🤖","#1b7f4b"], ["Group dance","💃","#8e3ab2"], ["Football final","⚽","#2e7d32"],
+    ["Photography walk","📷","#e07a1f"], ["Prize distribution","🏆","#c48a00"], ["Cultural night","🎭","#a02b2b"]
+  ];
+  const announcements = [
+    "Registrations close on 10 November, 5 pm.",
+    "Hack Sprint teams can have up to 3 members.",
+    "Carry your college ID card on all three days."
+  ];
+
+  /* ---------- Helpers ---------- */
+  const fmtDate = d => new Date(d + "T00:00:00").toLocaleDateString("en-IN", { weekday:"long", day:"numeric", month:"long" });
+  const fmtTime = t => { const [h, m] = t.split(":").map(Number); return `${h % 12 || 12}:${String(m).padStart(2,"0")} ${h >= 12 ? "PM" : "AM"}`; };
+
+  /* ---------- Mobile menu ---------- */
+  $("menuBtn").addEventListener("click", () => {
+    const open = $("menu").classList.toggle("open");
+    $("menuBtn").setAttribute("aria-expanded", open);
+  });
+  $("menu").addEventListener("click", e => { if (e.target.tagName === "A") $("menu").classList.remove("open"); });
+
+  /* ---------- Announcements (dynamic) ---------- */
+  function renderAnn() {
+    $("annList").innerHTML = "";
+    announcements.forEach(a => { const li = document.createElement("li"); li.textContent = a; $("annList").appendChild(li); });
+  }
+  $("annForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const text = $("annInput").value.trim();
+    if (!text) return;
+    announcements.unshift(text);        // newest first
+    $("annInput").value = "";
+    renderAnn();
+  });
+
+  /* ---------- Event cards + filters ---------- */
+  function renderEvents() {
+    const cat = $("fCat").value, date = $("fDate").value;
+    const list = events.filter(ev => (cat === "All" || ev.cat === cat) && (!date || ev.date === date));
+    $("cards").innerHTML = "";
+    list.forEach(ev => {
+      const c = document.createElement("article");
+      c.className = "card";
+      c.innerHTML = `<div class="top" style="background:${colours[ev.cat]}"></div>
+        <div class="body"><span class="tag">${ev.cat}</span><h3>${ev.name}</h3>
+        <p class="meta">${fmtDate(ev.date)}, ${fmtTime(ev.time)}<br>Venue: ${ev.venue}</p>
+        <p>${ev.desc}</p>
+        <button class="btn" data-id="${ev.id}">Register</button></div>`;
+      $("cards").appendChild(c);
+    });
+    $("noEvents").style.display = list.length ? "none" : "block";
+  }
+  ["fCat", "fDate"].forEach(id => $(id).addEventListener("change", renderEvents));
+  $("fReset").addEventListener("click", () => { $("fCat").value = "All"; $("fDate").value = ""; renderEvents(); });
+
+  // one listener for all Register buttons (event delegation)
+  $("cards").addEventListener("click", e => {
+    const btn = e.target.closest("button[data-id]");
+    if (!btn) return;
+    $("rEvent").value = btn.dataset.id;
+    $("register").scrollIntoView();
+    $("rName").focus({ preventScroll: true });
+  });
+
+  /* ---------- Schedule (grouped by date, sorted by time) ---------- */
+  function renderSchedule() {
+    const days = [...new Set(events.map(e => e.date))].sort();
+    $("scheduleBox").innerHTML = days.map(d => {
+      const rows = events.filter(e => e.date === d).sort((a, b) => a.time.localeCompare(b.time))
+        .map(e => `<div class="slot"><time>${fmtTime(e.time)}</time><div><b>${e.name}</b> <span class="meta">(${e.cat}) – ${e.venue}</span></div></div>`).join("");
+      return `<div class="day"><h3>${fmtDate(d)}</h3>${rows}</div>`;
+    }).join("");
+  }
+
+  /* ---------- Gallery ---------- */
+  function renderGallery() {
+    $("galleryBox").innerHTML = gallery.map(([cap, icon, bg]) =>
+      `<figure data-icon="${icon}" style="background:linear-gradient(135deg, ${bg}, #1b1f3b)" role="img" aria-label="${cap}"><figcaption>${cap}</figcaption></figure>`).join("");
+  }
+
+  /* ---------- Dropdown setup ---------- */
+  function initDropdowns() {
+    const cats = ["All", ...new Set(events.map(e => e.cat))];
+    $("fCat").innerHTML = cats.map(c => `<option value="${c}">${c === "All" ? "All categories" : c}</option>`).join("");
+    $("rEvent").innerHTML = `<option value="">Select event</option>` +
+      events.map(e => `<option value="${e.id}">${e.name} (${fmtDate(e.date).split(",")[1].trim()})</option>`).join("");
+  }
+
+  /* ---------- Validation ---------- */
+  function check(inputId, errId, ok, message) {
+    $(inputId).classList.toggle("invalid", !ok);
+    $(errId).textContent = ok ? "" : message;
+    return ok;
+  }
+  const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+  $("regForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const v = id => $(id).value.trim();
+    const results = [
+      check("rName",   "eName",   /^[A-Za-z .]{3,}$/.test(v("rName")), "Enter your name (letters only, min 3)."),
+      check("rEmail",  "eEmail",  emailOk(v("rEmail")), "Enter a valid email address."),
+      check("rMobile", "eMobile", /^[6-9]\d{9}$/.test(v("rMobile")), "Enter a 10-digit mobile number starting with 6–9."),
+      check("rDept",   "eDept",   v("rDept") !== "", "Select your department."),
+      check("rYear",   "eYear",   v("rYear") !== "", "Select your year."),
+      check("rEvent",  "eEvent",  v("rEvent") !== "", "Select an event.")
+    ];
+    const msg = $("regMsg");
+    if (results.includes(false)) {                       // at least one field failed
+      msg.style.display = "block"; msg.style.background = "#fdeaea"; msg.style.color = "#c62828";
+      msg.textContent = "Please correct the highlighted fields.";
+      return;
+    }
+    const ev = events.find(x => x.id === Number(v("rEvent")));
+    msg.style.display = "block"; msg.style.background = "#e3f5ea"; msg.style.color = "#1b7f4b";
+    msg.textContent = `Thank you, ${v("rName")}! You are registered for ${ev.name} on ${fmtDate(ev.date)} at ${fmtTime(ev.time)}, ${ev.venue}. A confirmation will be sent to ${v("rEmail")}.`;
+    e.target.reset();
+  });
+
+  $("enqForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const v = id => $(id).value.trim();
+    const results = [
+      check("qName",  "eqName",  v("qName").length >= 3, "Enter your name."),
+      check("qEmail", "eqEmail", emailOk(v("qEmail")), "Enter a valid email address."),
+      check("qMsg",   "eqMsg",   v("qMsg").length >= 10, "Message must be at least 10 characters.")
+    ];
+    const msg = $("enqMsg");
+    if (results.includes(false)) { msg.style.display = "none"; return; }
+    msg.style.display = "block";
+    msg.textContent = "Thanks! Your enquiry has been sent. We will reply within 2 working days.";
+    e.target.reset();
+  });
+
+  /* ---------- Start ---------- */
+  initDropdowns(); renderAnn(); renderEvents(); renderSchedule(); renderGallery();
+</script>
+</body>
+</html>
